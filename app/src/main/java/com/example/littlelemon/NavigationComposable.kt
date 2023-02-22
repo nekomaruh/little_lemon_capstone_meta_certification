@@ -24,7 +24,7 @@ fun Navigation(navController: NavHostController) {
             Home()
         }
         composable(Profile.route) {
-            Profile()
+            Profile(navController)
         }
     }
 }
