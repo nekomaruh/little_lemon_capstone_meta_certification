@@ -23,7 +23,7 @@ fun LemonHeader() {
             contentDescription = "",
             modifier = Modifier
                 .fillMaxWidth()
-                .height(50.dp)
+                .height(40.dp)
         )
     }
 }
