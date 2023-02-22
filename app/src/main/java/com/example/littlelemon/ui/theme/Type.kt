@@ -13,14 +13,25 @@ val Typography = Typography(
     body1 = TextStyle(
         fontFamily = FontFamily(Font(R.font.karla_regular)),
         fontWeight = FontWeight.SemiBold,
-        fontSize = 12.sp
+        fontSize = 18.sp
+    ),
+    h1 = TextStyle(
+        fontFamily = FontFamily(Font(R.font.markazi_regular)),
+        fontSize = 66.sp,
+        color = LemonYellow
+    ),
+    h2 = TextStyle(
+        fontFamily = FontFamily(Font(R.font.markazi_regular)),
+        fontSize = 46.sp,
+        color = LemonWhite
     ),
     button = TextStyle(
         fontFamily = FontFamily(Font(R.font.karla_regular)),
         fontWeight = FontWeight.Bold,
         fontSize = 16.sp,
         color = LemonBlack
-    )
+    ),
+
     /* Other default text styles to override
     button = TextStyle(
         fontFamily = FontFamily.Default,
