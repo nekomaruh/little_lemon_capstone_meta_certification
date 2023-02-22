@@ -15,10 +15,10 @@ fun Navigation(navController: NavHostController) {
 
     NavHost(
         navController = navController,
-        startDestination = if (userIsLogged) Onboarding.route else Home.route
+        startDestination = if (userIsLogged) Home.route else Onboarding.route
     ) {
         composable(Onboarding.route) {
-            Onboarding()
+            Onboarding(navController)
         }
         composable(Home.route) {
             Home()
