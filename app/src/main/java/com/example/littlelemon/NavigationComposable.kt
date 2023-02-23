@@ -1,6 +1,5 @@
 package com.example.littlelemon
 
-import android.content.SharedPreferences
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavHostController
