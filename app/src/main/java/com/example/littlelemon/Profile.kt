@@ -40,6 +40,7 @@ private fun Content(navController: NavController) {
     val firstName = prefs.getString("firstName", "").toString()
     val lastName = prefs.getString("lastName", "").toString()
     val email = prefs.getString("email", "").toString()
+    val context = LocalContext.current
 
     Column(
         modifier = Modifier
@@ -57,7 +58,7 @@ private fun Content(navController: NavController) {
             Text(
                 text = "Personal Information",
                 fontWeight = FontWeight.ExtraBold,
-                fontSize = 18.sp,
+                fontSize = 20.sp,
                 modifier = Modifier.padding(all = 20.dp),
             )
             Column(
@@ -77,7 +78,16 @@ private fun Content(navController: NavController) {
             }
         }
         LemonButton(text = "Log out") {
-            navController.navigate(Onboarding.route)
+            PreferenceManager.getDefaultSharedPreferences(context).edit().apply {
+                putBoolean("userIsLogged", false)
+                putString("firstName", "")
+                putString("lastName", "")
+                putString("email", "")
+                apply()
+            }
+            navController.navigate(Onboarding.route) {
+                popUpTo(Home.route) { inclusive = true }
+            }
         }
     }
 }
