@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.material.Icon
+import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.Text
 import androidx.compose.material.TextField
 import androidx.compose.material.TextFieldDefaults
@@ -39,14 +40,20 @@ private fun LemonTextFieldColors(
     focusedLabelColor = LemonDarkGreen
 )
 
+@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun LemonTextField(hint: String, value: String, onChange: (text: String) -> Unit) {
-    TextField(
+    val keyboardController = LocalSoftwareKeyboardController.current
+
+    OutlinedTextField(
         value = value,
         onValueChange = onChange,
         colors = LemonTextFieldColors(),
+        singleLine = true,
         shape = RoundedCornerShape(5.dp),
         modifier = Modifier.fillMaxWidth(),
+        keyboardActions = KeyboardActions(
+            onDone = { keyboardController?.hide() }),
         placeholder = { Text(hint) },
     )
 }
