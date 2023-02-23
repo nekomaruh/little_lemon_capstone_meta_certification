@@ -1,8 +1,6 @@
 package com.example.littlelemon
 
 import android.annotation.SuppressLint
-import android.app.Activity
-import android.view.MenuItem
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -10,8 +8,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
@@ -22,12 +18,11 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.Button
 import androidx.compose.material.Divider
-import androidx.compose.material.OutlinedButton
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -35,21 +30,17 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import androidx.room.Database
 import androidx.room.Room
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
-import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.example.littlelemon.ui.component.LemonHeader
 import com.example.littlelemon.ui.component.LemonOutlinedButton
-import com.example.littlelemon.ui.component.LemonTextField
 import com.example.littlelemon.ui.component.SearchLemonTextField
 import com.example.littlelemon.ui.component.TextH1
 import com.example.littlelemon.ui.component.TextH2
@@ -57,7 +48,6 @@ import com.example.littlelemon.ui.theme.LemonBlack
 import com.example.littlelemon.ui.theme.LemonDarkGreen
 import com.example.littlelemon.ui.theme.LemonGray
 import com.example.littlelemon.ui.theme.LemonWhite
-import com.example.littlelemon.ui.theme.LemonYellow
 
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
@@ -108,11 +98,33 @@ private fun ProfileImageButton(navController: NavController) {
 
 @Composable
 private fun Content(database: AppDatabase) {
+    /* Data retrieved from room */
     val databaseMenuItems = database.menuItemDao()
         .getAll()
         .observeAsState(emptyList())
         .value
 
+    /* Search text */
+    val searchTitle = remember {
+        mutableStateOf("")
+    }
+
+    val searchCategory = remember {
+        mutableStateOf("")
+    }
+
+    /* Filter data depending on search content */
+    val menuItems = if (searchTitle.value.isNotEmpty()) {
+        databaseMenuItems.filter {
+            it.title.contains(searchTitle.value, ignoreCase = true)
+        }
+    } else if (searchCategory.value.isNotEmpty()) {
+        databaseMenuItems.filter {
+            it.category.contains(searchCategory.value, ignoreCase = true)
+        }
+    } else databaseMenuItems
+
+    /* Show filtered categories */
     val categories = databaseMenuItems.map { it.category }.toSet().toList()
 
     Column(
@@ -120,15 +132,15 @@ private fun Content(database: AppDatabase) {
             .fillMaxWidth()
             .verticalScroll(rememberScrollState()),
     ) {
-        RestaurantHeader()
-        OrderForDelivery(categories)
-        MenuItems(databaseMenuItems)
+        RestaurantHeader(searchTitle)
+        OrderForDelivery(categories, searchCategory)
+        MenuItems(menuItems)
     }
 
 }
 
 @Composable
-fun OrderForDelivery(categories: List<String>) {
+fun OrderForDelivery(categories: List<String>, search: MutableState<String>) {
     Column(
         modifier = Modifier.padding(start = 20.dp, top = 20.dp, end = 20.dp),
         horizontalAlignment = Alignment.Start
@@ -145,7 +157,9 @@ fun OrderForDelivery(categories: List<String>) {
         ) {
             items(categories.size, { it }) {
                 LemonOutlinedButton(categories[it]) {
-
+                    search.value = (if (search.value == categories[it]) {
+                        String()
+                    } else categories[it])
                 }
                 Box(modifier = Modifier.width(20.dp))
             }
@@ -159,17 +173,13 @@ fun OrderForDelivery(categories: List<String>) {
 }
 
 @Composable
-fun RestaurantHeader() {
+fun RestaurantHeader(search: MutableState<String>) {
 
     val restaurantText = "We are a family owned\n" +
             "Mediterranean restaurant,\n" +
             "focused on traditional\n" +
             "recipes served with a\n" +
             "modern twist."
-
-    val search = remember {
-        mutableStateOf("")
-    }
 
     Column(
         modifier = Modifier
@@ -245,7 +255,7 @@ fun MenuItems(list: List<MenuItemRoom>) {
                     modifier = Modifier
                         .height(100.dp)
                         .width(100.dp)
-                ){
+                ) {
                     it.dontAnimate()
                 }
             }
