@@ -13,7 +13,8 @@ val Typography = Typography(
     body1 = TextStyle(
         fontFamily = FontFamily(Font(R.font.karla_regular)),
         fontWeight = FontWeight.SemiBold,
-        fontSize = 18.sp
+        fontSize = 18.sp,
+        color = LemonDarkGreen
     ),
     h1 = TextStyle(
         fontFamily = FontFamily(Font(R.font.markazi_regular)),

@@ -14,8 +14,9 @@ data class MenuItemRoom(
     @PrimaryKey val id: Int,
     val title: String,
     val description: String,
-    val price: Int,
-    val image: String
+    val price: String,
+    val image: String,
+    val category: String
 )
 
 @Dao
